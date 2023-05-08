@@ -1,0 +1,10 @@
+E:\Work\Study\L 2\CSC2143 (Computer graphics and Image Processing)\Compute Graphics\Practical Redo\2DTransformation\bin\Debug\2DTransformation.exe.config
+E:\Work\Study\L 2\CSC2143 (Computer graphics and Image Processing)\Compute Graphics\Practical Redo\2DTransformation\bin\Debug\2DTransformation.exe
+E:\Work\Study\L 2\CSC2143 (Computer graphics and Image Processing)\Compute Graphics\Practical Redo\2DTransformation\bin\Debug\2DTransformation.pdb
+E:\Work\Study\L 2\CSC2143 (Computer graphics and Image Processing)\Compute Graphics\Practical Redo\2DTransformation\obj\Debug\2DTransformation.csproj.AssemblyReference.cache
+E:\Work\Study\L 2\CSC2143 (Computer graphics and Image Processing)\Compute Graphics\Practical Redo\2DTransformation\obj\Debug\_2DTransformation.Form1.resources
+E:\Work\Study\L 2\CSC2143 (Computer graphics and Image Processing)\Compute Graphics\Practical Redo\2DTransformation\obj\Debug\_2DTransformation.Properties.Resources.resources
+E:\Work\Study\L 2\CSC2143 (Computer graphics and Image Processing)\Compute Graphics\Practical Redo\2DTransformation\obj\Debug\2DTransformation.csproj.GenerateResource.cache
+E:\Work\Study\L 2\CSC2143 (Computer graphics and Image Processing)\Compute Graphics\Practical Redo\2DTransformation\obj\Debug\2DTransformation.csproj.CoreCompileInputs.cache
+E:\Work\Study\L 2\CSC2143 (Computer graphics and Image Processing)\Compute Graphics\Practical Redo\2DTransformation\obj\Debug\2DTransformation.exe
+E:\Work\Study\L 2\CSC2143 (Computer graphics and Image Processing)\Compute Graphics\Practical Redo\2DTransformation\obj\Debug\2DTransformation.pdb

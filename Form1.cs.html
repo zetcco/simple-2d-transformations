@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>/mnt/e/Work/Study/L 2/CSC2143 (Computer graphics and Image Processing)/Compute Graphics/Practical Redo/2DTransformation/Form1.cs.html</title>
+<meta name="Generator" content="Vim/8.1">
+<meta name="plugin-version" content="vim8.1_v1">
+<meta name="syntax" content="cs">
+<meta name="settings" content="use_css,pre_wrap,no_foldcolumn,expand_tabs,prevent_copy=">
+<meta name="colorscheme" content="material">
+<style type="text/css">
+<!--
+pre { white-space: pre-wrap; font-family: monospace; color: #ffffff; background-color: #000000; }
+body { font-family: monospace; color: #ffffff; background-color: #000000; }
+* { font-size: 1em; }
+.Type { color: #ffff00; }
+.Comment { color: #afafaf; font-style: italic; }
+.Constant { color: #ff875f; }
+.Operator { color: #87d7ff; }
+.Structure { color: #87d7ff; }
+.Statement { color: #d787d7; }
+-->
+</style>
+</head>
+<body>
+<pre id='vimCodeElement'>
+
+   <span class="Statement">using</span> System;
+   <span class="Statement">using</span> System.Collections.Generic;
+   <span class="Statement">using</span> System.ComponentModel;
+   <span class="Statement">using</span> System.Data;
+   <span class="Statement">using</span> System.Drawing;
+   <span class="Statement">using</span> System.Linq;
+   <span class="Statement">using</span> System.Text;
+   <span class="Statement">using</span> System.Threading.Tasks;
+   <span class="Statement">using</span> System.Windows.Forms;
+
+   <span class="Structure">namespace</span> _2DTransformation
+   {
+       <span class="Type">public</span> <span class="Statement">partial</span> <span class="Structure">class</span> <span class="Type">Form1 </span><span class="Operator">:</span> Form
+       {
+
+           <span class="Type">private</span> PointF[] points; <span class="Comment">// Polygon points</span>
+
+           <span class="Type">public</span> Form1()
+           {
+               InitializeComponent();
+               <span class="Statement">this</span>.points <span class="Operator">=</span> <span class="Statement">new</span> PointF[] {
+                                               <span class="Statement">new</span> PointF(<span class="Constant">0</span>, <span class="Constant">0</span>),
+                                               <span class="Statement">new</span> PointF(<span class="Constant">110</span>, <span class="Constant">40</span>),
+                                               <span class="Statement">new</span> PointF(<span class="Constant">140</span>, <span class="Constant">100</span>),
+                                               <span class="Statement">new</span> PointF(<span class="Constant">200</span>, <span class="Constant">150</span>)
+                                                                   };
+
+           }
+
+           <span class="Comment">// This Pain method is called everytime where the Form loads or, this.Invalidate() or this.Refresh() is called. So, redraw the polygon on the Paint method and</span>
+           <span class="Comment">// call this.Refresh() on button clicks after points are adjusted using various Transformation functions.</span>
+           <span class="Type">private</span> <span class="Type">void</span> Form1_Paint(<span class="Type">object</span> sender, PaintEventArgs e)
+           {
+               Graphics grapics <span class="Operator">=</span> e.Graphics;
+               grapics.DrawPolygon(<span class="Statement">new</span> Pen(Color.Red), <span class="Statement">this</span>.points);
+               grapics.Dispose();
+           }
+
+           <span class="Type">private</span> <span class="Type">void</span> btn_rotate_Click(<span class="Type">object</span> sender, EventArgs e)
+           {
+               <span class="Type">int</span> angle <span class="Operator">=</span> <span class="Type">int</span>.Parse(<span class="Statement">this</span>.txt_rotate_in.Text); <span class="Comment">// Get the input angle</span>
+               <span class="Statement">for</span> (<span class="Type">int</span> j <span class="Operator">=</span> <span class="Constant">1</span>; j <span class="Operator">&lt;=</span> angle; j<span class="Operator">++</span>)
+               {
+                   <span class="Comment">/* Rotate each point of the polygon by 1 degree around the point 'this.point[3]'  */</span>
+                   <span class="Statement">for</span> (<span class="Type">int</span> i <span class="Operator">=</span> <span class="Constant">0</span>; i <span class="Operator">&lt;</span> <span class="Statement">this</span>.points.Length; i<span class="Operator">++</span>)
+                   {
+                       rotate_point(<span class="Statement">ref</span> <span class="Statement">this</span>.points[i], <span class="Statement">this</span>.points[<span class="Constant">3</span>], <span class="Constant">1</span>);
+                   }
+                   <span class="Statement">this</span>.Refresh();  <span class="Comment">// This will call the paint method (Form1_Paint())</span>
+                   System.Threading.Thread.Sleep(<span class="Constant">10</span>);
+               }
+           }
+
+
+            <span class="Comment">/* This function rotates a point around a given point.</span>
+<span class="Comment">            * A point that rotates around the origin will have the matrix ((Cos(t) -sin(t)), (Sin(t) Cos(t))).</span>
+<span class="Comment">            * In order to rotate around a given point, first we must bring the piviot to the origin along with the point (bring the line to the origin so that piviot lies with the origin)</span>
+<span class="Comment">            * Then apply the rotation matrix, then move it back to where it was.</span>
+<span class="Comment">            * In order to bring it the origin,</span>
+<span class="Comment">            *         Move the point so that piviot lies on origin -&gt; To do that, Apply the translation matrix T(x)</span>
+<span class="Comment">            *         Rotate around the piviot/origin -&gt; To do that, Apply the rotation matrix R(x)</span>
+<span class="Comment">            *         Move the point back to where it was -&gt; To do that, Apply the translation matrix.</span>
+<span class="Comment">            *         </span>
+<span class="Comment">            *         So, if point P is (x, y) then, resulting point after above operations will be, (Remember that the Transformation matrices are applied in reverse order)</span>
+<span class="Comment">            *         </span>
+<span class="Comment">            *              | x |        | 1   0  tx | | cos(a)   sin(a)  0 | | 1   0  -tx |</span>
+<span class="Comment">            *              | y |   =    | 0   1  ty |*| -sin(a)  cos(a)  0 |*| 0   1  -ty |</span>
+<span class="Comment">            *              | 1 |        | 0   0  1  | | 0        0       1 | | 0   0   1  |</span>
+<span class="Comment">            *</span>
+<span class="Comment">            *  Then, apply the 2D matrix. Then move the resulting cordinate back to original place by adding the Xp, Yp.</span>
+<span class="Comment">            */</span>
+
+            <span class="Comment">// 'ref' is to pass the pointer of the 'point'. piviot is the rotation point. 'angle' is the angle to rotate in degrees. </span>
+           <span class="Type">private</span> <span class="Type">void</span> rotate_point(<span class="Statement">ref</span> PointF point, PointF piviot, <span class="Type">int</span> angle)
+           {
+               <span class="Type">double</span> angle_rad <span class="Operator">=</span> (Math.PI <span class="Operator">/</span> <span class="Constant">180</span>)<span class="Operator">*</span>angle;    <span class="Comment">// Convert degree -&gt; radians</span>
+               point.X <span class="Operator">=</span> (<span class="Type">float</span>)((Math.Cos(angle_rad) <span class="Operator">*</span> (point.X <span class="Operator">-</span> piviot.X)) <span class="Operator">-</span> (Math.Sin(angle_rad) <span class="Operator">*</span> (point.Y <span class="Operator">-</span> piviot.Y)) <span class="Operator">+</span> piviot.X);
+               point.Y <span class="Operator">=</span> (<span class="Type">float</span>)((Math.Sin(angle_rad) <span class="Operator">*</span> (point.X <span class="Operator">-</span> piviot.X)) <span class="Operator">+</span> (Math.Cos(angle_rad) <span class="Operator">*</span> (point.Y <span class="Operator">-</span> piviot.Y)) <span class="Operator">+</span> piviot.Y);
+           }
+
+           <span class="Type">private</span> <span class="Type">void</span> scale_point(<span class="Statement">ref</span> PointF point, <span class="Type">float</span> scale)
+           {
+               point.X <span class="Operator">=</span> scale <span class="Operator">*</span> point.X;
+               point.Y <span class="Operator">=</span> scale <span class="Operator">*</span> point.Y;
+           }
+
+           <span class="Type">private</span> <span class="Type">void</span> btn_scale_Click(<span class="Type">object</span> sender, EventArgs e)
+           {
+               <span class="Type">float</span> scale <span class="Operator">=</span> <span class="Type">float</span>.Parse(txt_scale_in.Text);
+
+               <span class="Comment">// Scale each point of polygon by a 'scale'</span>
+               <span class="Statement">for</span> (<span class="Type">int</span> i <span class="Operator">=</span> <span class="Constant">0</span>; i <span class="Operator">&lt;</span> <span class="Statement">this</span>.points.Length; i<span class="Operator">++</span>)
+               {
+                   scale_point(<span class="Statement">ref</span> points[i], scale);
+               }
+               <span class="Statement">this</span>.Refresh();  <span class="Comment">// This will call the paint method (Form1_Paint())</span>
+           }
+
+           <span class="Type">private</span> <span class="Type">void</span> btn_translate_Click(<span class="Type">object</span> sender, EventArgs e)
+           {
+               <span class="Type">float</span> tx <span class="Operator">=</span> <span class="Type">float</span>.Parse(txt_translate_x_in.Text);
+               <span class="Type">float</span> ty <span class="Operator">=</span> <span class="Type">float</span>.Parse(txt_translate_y_in.Text);
+
+               <span class="Comment">// Translate each point of the polygon</span>
+               <span class="Statement">for</span> (<span class="Type">int</span> i <span class="Operator">=</span> <span class="Constant">0</span>; i <span class="Operator">&lt;</span> <span class="Statement">this</span>.points.Length; i<span class="Operator">++</span>)
+               {
+                   translate_point(<span class="Statement">ref</span> points[i], tx, ty);
+               }
+               <span class="Statement">this</span>.Refresh();  <span class="Comment">// This will call the paint method (Form1_Paint())</span>
+           }
+
+           <span class="Type">private</span> <span class="Type">void</span> translate_point(<span class="Statement">ref</span> PointF point, <span class="Type">float</span> tx, <span class="Type">float</span> ty)
+           {
+               point.X <span class="Operator">+=</span> tx;
+               point.Y <span class="Operator">+=</span> ty;
+           }
+       }
+   }
+</pre>
+</body>
+</html>
+<!-- vim: set foldmethod=manual : -->
